@@ -6,40 +6,36 @@ import Html.App
 
 
 type alias Model =
-    Bool
+    Int
 
 
 init : ( Model, Cmd Msg )
 init =
-    ( False, Cmd.none )
+    ( 0, Cmd.none )
 
 
 type Msg
-    = Expand
-    | Collapse
+    = Increment Int
+    | Decrement Int
 
 
 view : Model -> Html Msg
 view model =
-    case model of
-        True ->
-            div []
-                [ button [ onClick Collapse ] [ text "Collapse" ]
-                , text (toString model)
-                ]
-
-        False ->
-            div [] [ button [ onClick Expand ] [ text "Expand" ] ]
+    div []
+        [ button [ onClick (Increment 2) ] [ text "Inc 2" ]
+        , button [ onClick (Decrement 1) ] [ text "Dec 1" ]
+        , text (toString model)
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
-        Expand ->
-            ( True, Cmd.none )
+        Increment amount ->
+            ( model + amount, Cmd.none )
 
-        Collapse ->
-            ( False, Cmd.none )
+        Decrement amount ->
+            ( model - amount, Cmd.none )
 
 
 subscriptions : Model -> Sub Msg
