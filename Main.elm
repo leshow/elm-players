@@ -28,9 +28,12 @@ view model =
     div []
         [ map CounterMsg (Counter.view model.counterModel)
         , div []
-            [ text
-                <| toString
-                <| Counter.count model.counterModel
+            [ Counter.count model.counterModel
+                |> toString
+                |> text
+              -- text
+              -- <| toString
+              -- <| Counter.count model.counterModel
             ]
         ]
 
