@@ -1,0 +1,45 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/home/evan/.nvm/versions/node/v5.0.0/bin/node',
+1 verbose cli   '/home/evan/.nvm/versions/node/v5.0.0/bin/npm',
+1 verbose cli   'run',
+1 verbose cli   'dev' ]
+2 info using npm@3.3.6
+3 info using node@v5.0.0
+4 verbose run-script [ 'predev', 'dev', 'postdev' ]
+5 info lifecycle app@1.0.0~predev: app@1.0.0
+6 silly lifecycle app@1.0.0~predev: no script for predev, continuing
+7 info lifecycle app@1.0.0~dev: app@1.0.0
+8 verbose lifecycle app@1.0.0~dev: unsafe-perm in lifecycle true
+9 verbose lifecycle app@1.0.0~dev: PATH: /home/evan/.nvm/versions/node/v5.0.0/lib/node_modules/npm/bin/node-gyp-bin:/home/evan/personal/elm/elm-tutorial-0.17/app/node_modules/.bin:/home/evan/.nvm/versions/node/v5.0.0/bin:/home/evan/.stack/programs/x86_64-linux/ghc-7.10.3/bin:/home/evan/personal/rust/rust_mnemonic/target/release/:/home/evan/personal/elm/elm-format/dist/build/elm-format-0.17/:/home/evan/.cargo/bin/:/home/evan/.cabal/bin/:/usr/local/bin:/usr/local/sbin:/home/evan/.stack/programs/x86_64-linux/ghc-7.10.3/bin:/home/evan/personal/rust/rust_mnemonic/target/release/:/home/evan/personal/elm/elm-format/dist/build/elm-format-0.17/:/home/evan/.cargo/bin/:/home/evan/.cabal/bin/:/home/evan/.cargo/bin:/usr/bin:/bin:/usr/local/games:/usr/games
+10 verbose lifecycle app@1.0.0~dev: CWD: /home/evan/personal/elm/elm-tutorial-0.17/app
+11 silly lifecycle app@1.0.0~dev: Args: [ '-c', 'webpack-dev-server --port 3000' ]
+12 silly lifecycle app@1.0.0~dev: Returned: code: 1  signal: null
+13 info lifecycle app@1.0.0~dev: Failed to exec dev script
+14 verbose stack Error: app@1.0.0 dev: `webpack-dev-server --port 3000`
+14 verbose stack Exit status 1
+14 verbose stack     at EventEmitter.<anonymous> (/home/evan/.nvm/versions/node/v5.0.0/lib/node_modules/npm/lib/utils/lifecycle.js:233:16)
+14 verbose stack     at emitTwo (events.js:87:13)
+14 verbose stack     at EventEmitter.emit (events.js:172:7)
+14 verbose stack     at ChildProcess.<anonymous> (/home/evan/.nvm/versions/node/v5.0.0/lib/node_modules/npm/lib/utils/spawn.js:24:14)
+14 verbose stack     at emitTwo (events.js:87:13)
+14 verbose stack     at ChildProcess.emit (events.js:172:7)
+14 verbose stack     at maybeClose (internal/child_process.js:818:16)
+14 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:211:5)
+15 verbose pkgid app@1.0.0
+16 verbose cwd /home/evan/personal/elm/elm-tutorial-0.17/app
+17 error Linux 4.5.0-2-amd64
+18 error argv "/home/evan/.nvm/versions/node/v5.0.0/bin/node" "/home/evan/.nvm/versions/node/v5.0.0/bin/npm" "run" "dev"
+19 error node v5.0.0
+20 error npm  v3.3.6
+21 error code ELIFECYCLE
+22 error app@1.0.0 dev: `webpack-dev-server --port 3000`
+22 error Exit status 1
+23 error Failed at the app@1.0.0 dev script 'webpack-dev-server --port 3000'.
+23 error This is most likely a problem with the app package,
+23 error not with npm itself.
+23 error Tell the author that this fails on your system:
+23 error     webpack-dev-server --port 3000
+23 error You can get their info via:
+23 error     npm owner ls app
+23 error There is likely additional logging output above.
+24 verbose exit [ 1, true ]
