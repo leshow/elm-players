@@ -9,7 +9,7 @@ import Players.Messages exposing (..)
 
 collectionDecoder : Decode.Decoder (List Player)
 collectionDecoder =
-    Decode.list playerDecoder
+    Decode.list playerDecode
 
 
 playerDecode : Decode.Decoder Player
@@ -25,7 +25,7 @@ playerUrl =
     "http://localhost:4000/players"
 
 
-fetchTask : Task.Task Http.Error String
+fetchTask : Task.Task Http.Error (List Player)
 fetchTask =
     Http.get collectionDecoder playerUrl
 
