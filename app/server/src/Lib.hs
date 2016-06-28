@@ -42,9 +42,12 @@ getPlayerById :: PlayerId -> Handler Player
 getPlayerById id =
     let
         found = filter (\x -> playerId x == id) examplePlayers
-        isFound = null found
+        isFound = not (null found)
     in
         if isFound then return $ head found else throwE err404
+
+getExamplePlayer :: PlayerId -> Handler Player
+getExamplePlayer id = return $ examplePlayer
 
 examplePlayer :: Player
 examplePlayer = Player 1 "Sally" 2
@@ -53,6 +56,6 @@ examplePlayers :: [Player]
 examplePlayers =
     [ Player 1 "Sally" 2
     , Player 2 "Lance" 1
-    , Player 2 "Aki" 3
+    , Player 3 "Aki" 3
     , Player 4 "Maria" 4
     ]
