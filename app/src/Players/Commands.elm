@@ -10,7 +10,7 @@ import Players.Messages exposing (..)
 
 saveUrl : PlayerId -> String
 saveUrl playerId =
-    "http://localhost:4000/players" ++ (toString playerId)
+    "http://localhost:4000/api/players" ++ (toString playerId)
 
 
 saveTask : Player -> Task.Task Http.Error Player
@@ -66,7 +66,7 @@ playerDecode =
 
 playerUrl : String
 playerUrl =
-    "http://localhost:4000/players"
+    "http://localhost:4000/api/players"
 
 
 fetchTask : Task.Task Http.Error (List Player)
