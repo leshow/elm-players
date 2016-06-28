@@ -36,7 +36,7 @@ server =
     getPlayerById
 
 getPlayers :: Handler [Player]
-getPlayers = return $ examplePlayers
+getPlayers = return $ existingPlayers
 
 getPlayerById :: PlayerId -> Handler Player
 getPlayerById id =
@@ -46,14 +46,8 @@ getPlayerById id =
     in
         if isFound then return $ head found else throwE err404
 
-getExamplePlayer :: PlayerId -> Handler Player
-getExamplePlayer id = return $ examplePlayer
-
-examplePlayer :: Player
-examplePlayer = Player 1 "Sally" 2
-
-examplePlayers :: [Player]
-examplePlayers =
+existingPlayers :: [Player]
+existingPlayers =
     [ Player 1 "Sally" 2
     , Player 2 "Lance" 1
     , Player 3 "Aki" 3
