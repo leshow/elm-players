@@ -53,15 +53,24 @@ existingPlayers =
     ]
 
 -- player map
-data DB = DB (MVar (M.Map PlayerId Player))
+data DB = DB (MVar PlayerMap)
     deriving (Eq, Show)
 
+type PlayerMap = M.Map PlayerId Player
 
 playerDB :: IO DB
-playerDB = DB `fmap` newMVar M.empty -- <$> is also acceptable here
+playerDB = DB <$> newMVar M.empty -- <$> is also acceptable here
+
+insertPlayer :: DB -> Player -> IO ()
+insertPlayer (DB mvar) player = do
+    pmap <- takeMVar mvar
+    putMVar m (M.insert player pmap)
 
 findPlayer :: DB -> PlayerId -> IO (Maybe Player)
---findPlayer (DB mvar) idx =
+findPlayer (DB mvar) idx = do
+    pmap <- takeMVar mvar
+    putMVar mvar pmap
+    return (M.lookup idx pmap)
 
 data Logger = Logger (MVar LogCommand)
 data LogCommand = Log String | End (MVar ())
