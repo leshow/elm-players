@@ -5,10 +5,10 @@
 
 module Api where
 
-import           Data.Aeson
-import           Data.Proxy
-import           GHC.Generics
-import           Servant.API
+import Data.Aeson
+import Data.Proxy
+import GHC.Generics
+import Servant.API
 
 type Api =
   "api" :>
