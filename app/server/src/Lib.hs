@@ -35,30 +35,6 @@ getServer = do
     db <- playerDB
     return $ server db
 
--- server :: Server Api
--- server =
---     getPlayers :<|>
---     getPlayerById
---
--- getPlayers :: Handler [Player]
--- getPlayers = return $ existingPlayers
---
--- getPlayerById :: PlayerId -> Handler Player
--- getPlayerById id =
---     let
---         found = Prelude.filter (\x -> playerId x == id) existingPlayers
---         isFound = not (Prelude.null found)
---     in
---         if isFound then return $ head found else throwE err404
-
--- existingPlayers :: [Player]
--- existingPlayers =
---     [ Player 1 "Sally" 2
---     , Player 2 "Lance" 1
---     , Player 3 "Aki" 3
---     , Player 4 "Maria" 4
---     ]
-
 server :: DB -> Server Api
 server db =
     getPlayers db :<|>
@@ -113,7 +89,7 @@ updatePlayer (DB mvar) id player = do
     pmap <- takeMVar mvar
     if id `M.member` pmap
         then putMVar mvar (M.insert id player pmap)
-        else return ()
+        else putMVar mvar pmap
 
 
 -- attempt at a thread-safe logger
@@ -146,3 +122,28 @@ logStop (Logger m) = do
   s <- newEmptyMVar
   putMVar m (End s)
   takeMVar s
+
+-- old implementation
+-- server :: Server Api
+-- server =
+--     getPlayers :<|>
+--     getPlayerById
+--
+-- getPlayers :: Handler [Player]
+-- getPlayers = return $ existingPlayers
+--
+-- getPlayerById :: PlayerId -> Handler Player
+-- getPlayerById id =
+--     let
+--         found = Prelude.filter (\x -> playerId x == id) existingPlayers
+--         isFound = not (Prelude.null found)
+--     in
+--         if isFound then return $ head found else throwE err404
+
+-- existingPlayers :: [Player]
+-- existingPlayers =
+--     [ Player 1 "Sally" 2
+--     , Player 2 "Lance" 1
+--     , Player 3 "Aki" 3
+--     , Player 4 "Maria" 4
+--     ]
