@@ -7,6 +7,7 @@ module Lib
     ) where
 
 import Control.Concurrent
+import Control.Monad.IO.Class
 import Control.Monad.Trans.Except
 import Network.Wai
 import Network.Wai.Handler.Warp
@@ -26,40 +27,73 @@ start = do
     runSettings settings =<< app
 
 app :: IO Application
-app = return $ serve api server
+app = serve api <$> getServer
 
+getServer :: IO (Server Api)
+getServer = do
+    db <- playerDB
+    return $ server db
 
-server :: Server Api
-server =
-    getPlayers :<|>
-    getPlayerById
+-- server :: Server Api
+-- server =
+--     getPlayers :<|>
+--     getPlayerById
+--
+-- getPlayers :: Handler [Player]
+-- getPlayers = return $ existingPlayers
+--
+-- getPlayerById :: PlayerId -> Handler Player
+-- getPlayerById id =
+--     let
+--         found = Prelude.filter (\x -> playerId x == id) existingPlayers
+--         isFound = not (Prelude.null found)
+--     in
+--         if isFound then return $ head found else throwE err404
 
-getPlayers :: Handler [Player]
-getPlayers = return $ existingPlayers
+-- existingPlayers :: [Player]
+-- existingPlayers =
+--     [ Player 1 "Sally" 2
+--     , Player 2 "Lance" 1
+--     , Player 3 "Aki" 3
+--     , Player 4 "Maria" 4
+--     ]
 
-getPlayerById :: PlayerId -> Handler Player
-getPlayerById id =
-    let
-        found = Prelude.filter (\x -> playerId x == id) existingPlayers
-        isFound = not (Prelude.null found)
-    in
-        if isFound then return $ head found else throwE err404
+server :: DB -> Server Api
+server db =
+    getPlayers db :<|>
+    getPlayerById db :<|>
+    postPlayer db
+    --updatePlayerById db
 
-existingPlayers :: [Player]
-existingPlayers =
-    [ Player 1 "Sally" 2
-    , Player 2 "Lance" 1
-    , Player 3 "Aki" 3
-    , Player 4 "Maria" 4
-    ]
+getPlayers :: DB -> Handler [Player]
+getPlayers db = liftIO $ getPmap db
+
+getPlayerById :: DB -> PlayerId -> Handler Player
+getPlayerById db id = maybe (throwE err404) return =<< liftIO (findPlayer db id)
+
+postPlayer :: DB -> PlayerId -> Player -> Handler Player
+postPlayer db id player = liftIO $ insertPlayer db player
+
 
 -- player map
 data DB = DB (MVar PlayerMap)
 
 type PlayerMap = M.Map PlayerId Player
 
+
+existingPlayers :: [(PlayerId, Player)]
+existingPlayers =
+    [ (1, Player 1 "Sally" 2)
+    , (2, Player 2 "Lance" 1)
+    , (3, Player 3 "Aki" 3)
+    , (4, Player 4 "Maria" 4)
+    ]
+
+getPmap :: DB -> IO [Player]
+getPmap (DB mvar) = elem <$> readMVar mvar
+
 playerDB :: IO DB
-playerDB = DB <$> newMVar M.empty -- <$> is also acceptable here
+playerDB = DB <$> newMVar (M.fromList existingPlayers) -- <$> is also acceptable here
 
 insertPlayer :: DB -> Player -> IO ()
 insertPlayer (DB mvar) player = do
@@ -72,6 +106,9 @@ findPlayer (DB mvar) idx = do
     putMVar mvar pmap
     return (M.lookup idx pmap)
 
+--updatePlayer :: DB -> PlayerId -> Player -> IO ()
+
+-- attempt at a thread-safe logger
 data Logger = Logger (MVar LogCommand)
 data LogCommand = Log String | End (MVar ())
 
