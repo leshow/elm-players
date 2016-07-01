@@ -6,6 +6,7 @@ module Lib
     ( start
     ) where
 
+import Control.Concurrent
 import Control.Monad.Trans.Except
 import Network.Wai
 import Network.Wai.Handler.Warp
@@ -54,7 +55,6 @@ existingPlayers =
 
 -- player map
 data DB = DB (MVar PlayerMap)
-    deriving (Eq, Show)
 
 type PlayerMap = M.Map PlayerId Player
 
@@ -64,7 +64,7 @@ playerDB = DB <$> newMVar M.empty -- <$> is also acceptable here
 insertPlayer :: DB -> Player -> IO ()
 insertPlayer (DB mvar) player = do
     pmap <- takeMVar mvar
-    putMVar m (M.insert player pmap)
+    putMVar mvar (M.insert (playerId player) player pmap) -- insert player at { playerId: Player }
 
 findPlayer :: DB -> PlayerId -> IO (Maybe Player)
 findPlayer (DB mvar) idx = do
