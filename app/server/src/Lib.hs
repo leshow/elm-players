@@ -53,6 +53,7 @@ postPlayer db id player = maybe (throwE err500) return =<< liftIO (insertPlayer 
 
 updatePlayerById :: DB -> PlayerId -> Player -> Handler Player
 updatePlayerById db id player = maybe (throwE err500) return =<< liftIO (updatePlayer db id player >> findPlayer db id)
+-- (\x -> maybe (throwE err500) (return) x) =<< liftIO (updatePlayer db id player >> findPlayer db id)
 
 -- player map
 data DB = DB (MVar PlayerMap)
