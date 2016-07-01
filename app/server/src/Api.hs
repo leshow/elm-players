@@ -14,8 +14,8 @@ type Api =
   "api" :>
     ("player" :> Get '[JSON] [Player] :<|>
      "player" :> Capture "playerId" PlayerId :> Get '[JSON] Player :<|>
-     "player" :> Capture "playerId" PlayerId :> Patch '[JSON] Player :<|>
      "player" :> Capture "playerId" PlayerId :> ReqBody '[JSON] Player :> Post '[JSON] Player)
+     --"player" :> Capture "playerId" PlayerId :> Patch '[JSON] Player)
 
 api :: Proxy Api
 api = Proxy
