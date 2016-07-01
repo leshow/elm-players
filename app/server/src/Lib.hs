@@ -6,14 +6,15 @@ module Lib
     ( start
     ) where
 
+import Api
+
 import Control.Concurrent
-import Control.Monad.IO.Class
+import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Except
 import Network.Wai
 import Network.Wai.Handler.Warp
-import Servant
+import Servant (serve, (:<|>)(..), Proxy(..), Server, Handler, err404, err500)
 import System.IO
-import Api
 import Data.Map as M
 
 start :: IO ()
@@ -62,8 +63,8 @@ server :: DB -> Server Api
 server db =
     getPlayers db :<|>
     getPlayerById db :<|>
-    postPlayer db
-    --updatePlayerById db
+    postPlayer db :<|>
+    updatePlayerById db
 
 getPlayers :: DB -> Handler [Player]
 getPlayers db = liftIO $ getPmap db
@@ -72,14 +73,15 @@ getPlayerById :: DB -> PlayerId -> Handler Player
 getPlayerById db id = maybe (throwE err404) return =<< liftIO (findPlayer db id)
 
 postPlayer :: DB -> PlayerId -> Player -> Handler Player
-postPlayer db id player = liftIO $ insertPlayer db player
+postPlayer db id player = maybe (throwE err500) return =<< liftIO (insertPlayer db player >> findPlayer db id)
 
+updatePlayerById :: DB -> PlayerId -> Player -> Handler Player
+updatePlayerById db id player = maybe (throwE err500) return =<< liftIO (updatePlayer db id player >> findPlayer db id)
 
 -- player map
 data DB = DB (MVar PlayerMap)
 
 type PlayerMap = M.Map PlayerId Player
-
 
 existingPlayers :: [(PlayerId, Player)]
 existingPlayers =
@@ -90,7 +92,7 @@ existingPlayers =
     ]
 
 getPmap :: DB -> IO [Player]
-getPmap (DB mvar) = elem <$> readMVar mvar
+getPmap (DB mvar) = elems <$> readMVar mvar
 
 playerDB :: IO DB
 playerDB = DB <$> newMVar (M.fromList existingPlayers) -- <$> is also acceptable here
@@ -106,7 +108,13 @@ findPlayer (DB mvar) idx = do
     putMVar mvar pmap
     return (M.lookup idx pmap)
 
---updatePlayer :: DB -> PlayerId -> Player -> IO ()
+updatePlayer :: DB -> PlayerId -> Player -> IO ()
+updatePlayer (DB mvar) id player = do
+    pmap <- takeMVar mvar
+    if id `M.member` pmap
+        then putMVar mvar (M.insert id player pmap)
+        else return ()
+
 
 -- attempt at a thread-safe logger
 data Logger = Logger (MVar LogCommand)
@@ -129,3 +137,12 @@ logger (Logger mvar) = do
         End m -> do
             putStrLn "Logger ending"
             putMVar m ()
+
+logMessage :: Logger -> String -> IO ()
+logMessage (Logger m) s = putMVar m (Log s)
+
+logStop :: Logger -> IO ()
+logStop (Logger m) = do
+  s <- newEmptyMVar
+  putMVar m (End s)
+  takeMVar s
