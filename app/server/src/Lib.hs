@@ -71,7 +71,7 @@ getPmap :: DB -> IO [Player]
 getPmap (DB mvar) = elems <$> readMVar mvar
 
 playerDB :: IO DB
-playerDB = DB <$> newMVar (M.fromList existingPlayers) -- <$> is also acceptable here
+playerDB = DB <$> newMVar (M.fromList existingPlayers)
 
 insertPlayer :: DB -> Player -> IO ()
 insertPlayer (DB mvar) player = do
