@@ -23,6 +23,8 @@ library
                       , servant
                       , servant-server
                       , wai
+                      , wai-extra
+                      , wai-cors
                       , transformers
                       , containers
   default-language:    Haskell2010

@@ -13,6 +13,8 @@ import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Except
 import Network.Wai
 import Network.Wai.Handler.Warp
+import Network.Wai.Middleware.Cors (simpleCors)
+import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 import Servant (serve, (:<|>)(..), Proxy(..), Server, Handler, err404, err500)
 import System.IO
 import Data.Map as M
@@ -27,8 +29,12 @@ start = do
             defaultSettings
     runSettings settings =<< app
 
+
+-- app = simpleCors . serve api <$> getServer
 app :: IO Application
-app = serve api <$> getServer
+app = do
+    s <- getServer
+    return $ logStdoutDev $ simpleCors $ serve api s
 
 getServer :: IO (Server Api)
 getServer = do

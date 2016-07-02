@@ -10,26 +10,26 @@ import Players.Messages exposing (..)
 
 saveUrl : PlayerId -> String
 saveUrl playerId =
-    "http://localhost:4000/api/players" ++ (toString playerId)
+    "http://localhost:4000/api/player" ++ (toString playerId)
 
 
 saveTask : Player -> Task.Task Http.Error Player
 saveTask player =
     let
         body =
-            memberEncoded player
+            playerEncoded player
                 |> Encode.encode 0
                 |> Http.string
 
         config =
-            { verb = "PATCH"
+            { verb = "POST"
             , headers = [ ( "Content-Type", "application/json" ) ]
             , url = saveUrl player.id
             , body = body
             }
     in
         Http.send Http.defaultSettings config
-            |> Http.fromJson memberDecoder
+            |> Http.fromJson playerDecode
 
 
 save : Player -> Cmd Msg
@@ -38,8 +38,8 @@ save player =
         |> Task.perform SaveFail SaveSuccess
 
 
-memberEncoded : Player -> Encode.Value
-memberEncoded player =
+playerEncoded : Player -> Encode.Value
+playerEncoded player =
     let
         list =
             [ ( "id", Encode.int player.id )
@@ -66,7 +66,7 @@ playerDecode =
 
 playerUrl : String
 playerUrl =
-    "http://localhost:4000/api/players"
+    "http://localhost:4000/api/player"
 
 
 fetchTask : Task.Task Http.Error (List Player)
