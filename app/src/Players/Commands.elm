@@ -10,7 +10,7 @@ import Players.Messages exposing (..)
 
 saveUrl : PlayerId -> String
 saveUrl playerId =
-    "http://localhost:4000/api/player" ++ (toString playerId)
+    "http://localhost:4000/api/player/" ++ (toString playerId)
 
 
 saveTask : Player -> Task.Task Http.Error Player
@@ -42,9 +42,9 @@ playerEncoded : Player -> Encode.Value
 playerEncoded player =
     let
         list =
-            [ ( "id", Encode.int player.id )
-            , ( "name", Encode.string player.name )
-            , ( "level", Encode.int player.level )
+            [ ( "playerId", Encode.int player.id )
+            , ( "playerName", Encode.string player.name )
+            , ( "playerLevel", Encode.int player.level )
             ]
     in
         list
@@ -59,9 +59,9 @@ collectionDecoder =
 playerDecode : Decode.Decoder Player
 playerDecode =
     Decode.object3 Player
-        ("id" := Decode.int)
-        ("name" := Decode.string)
-        ("level" := Decode.int)
+        ("playerId" := Decode.int)
+        ("playerName" := Decode.string)
+        ("playerLevel" := Decode.int)
 
 
 playerUrl : String
