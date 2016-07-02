@@ -8,16 +8,16 @@ module Lib
 
 import Api
 
-import Control.Concurrent
+import Control.Concurrent (forkIO, MVar, newEmptyMVar, takeMVar, putMVar, readMVar, newMVar)
 import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Except
-import Network.Wai
-import Network.Wai.Handler.Warp
+import Control.Monad.Trans.Except (throwE)
+import Network.Wai (Application)
+import Network.Wai.Handler.Warp (runSettings, setPort, setBeforeMainLoop, defaultSettings)
 import Network.Wai.Middleware.Cors (simpleCors)
 import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 import Servant (serve, (:<|>)(..), Proxy(..), Server, Handler, err404, err500)
 import System.IO
-import Data.Map as M
+import qualified Data.Map as M
 
 start :: IO ()
 start = do
@@ -29,7 +29,8 @@ start = do
             defaultSettings
     runSettings settings =<< app
 
-
+-- Note that  f <$> x  is the same thing as  do v <- x; return (f v)
+-- do { s <- return 1 ; return (s + 1) ; } :: Maybe Int    =====    return 1 >>= \s -> return (s + 1) :: Maybe Int
 -- app = simpleCors . serve api <$> getServer
 app :: IO Application
 app = do
@@ -75,7 +76,7 @@ existingPlayers =
     ]
 
 getPmap :: DB -> IO [Player]
-getPmap (DB mvar) = elems <$> readMVar mvar
+getPmap (DB mvar) = M.elems <$> readMVar mvar
 
 playerDB :: IO DB
 playerDB = DB <$> newMVar (M.fromList existingPlayers)
@@ -94,7 +95,7 @@ findPlayer (DB mvar) idx = do
 updatePlayer :: DB -> PlayerId -> Player -> IO ()
 updatePlayer (DB mvar) id player = do
     pmap <- takeMVar mvar
-    if id `M.member` pmap
+    if M.member id pmap
         then putMVar mvar (M.insert id player pmap)
         else putMVar mvar pmap
 
@@ -129,28 +130,3 @@ logStop (Logger m) = do
   s <- newEmptyMVar
   putMVar m (End s)
   takeMVar s
-
--- old implementation
--- server :: Server Api
--- server =
---     getPlayers :<|>
---     getPlayerById
---
--- getPlayers :: Handler [Player]
--- getPlayers = return $ existingPlayers
---
--- getPlayerById :: PlayerId -> Handler Player
--- getPlayerById id =
---     let
---         found = Prelude.filter (\x -> playerId x == id) existingPlayers
---         isFound = not (Prelude.null found)
---     in
---         if isFound then return $ head found else throwE err404
-
--- existingPlayers :: [Player]
--- existingPlayers =
---     [ Player 1 "Sally" 2
---     , Player 2 "Lance" 1
---     , Player 3 "Aki" 3
---     , Player 4 "Maria" 4
---     ]
