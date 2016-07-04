@@ -25,7 +25,7 @@ start = do
         settings =
             setPort port $
             setBeforeMainLoop (hPutStrLn stderr
-                ("listening on port " `mappend` show port)) $
+                ("listening on port " `mappend` show port))
             defaultSettings
     runSettings settings =<< app
 
