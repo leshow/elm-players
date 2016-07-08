@@ -22,8 +22,8 @@ saveTask player =
                 |> Http.string
 
         config =
-            { verb = "POST"
-            , headers = [ ( "Content-Type", "application/json" ) ]
+            { verb = "PUT"
+            , headers = [ ( "Content-Type", "application/json" ), ( "Origin", "localhost" ) ]
             , url = saveUrl player.id
             , body = body
             }
