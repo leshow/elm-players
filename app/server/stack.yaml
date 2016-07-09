@@ -2,30 +2,5 @@ flags: {}
 extra-package-dbs: []
 packages:
 - '.'
-extra-deps:
-- appar-0.1.4
-- base-unicode-symbols-0.2.2.4
-- byteorder-1.0.4
-- bytestring-builder-0.10.8.1.0
-- bytestring-conversion-0.3.1
-- double-conversion-2.0.1.0
-- http-date-0.0.6.1
-- http-media-0.6.3
-- http2-1.6.0
-- iproute-1.7.0
-- psqueues-0.2.2.1
-- servant-0.7.1
-- servant-server-0.7.1
-- simple-sendfile-0.2.25
-- string-conversions-0.4
-- stringsearch-0.3.6.6
-- vault-0.3.0.6
-- wai-3.2.1.1
-- wai-app-static-3.1.5
-- wai-cors-0.2.5
-- wai-extra-3.0.15.2
-- wai-logger-2.2.7
-- warp-3.2.6
-- aeson-pretty-0.8.0
-- hex-0.1.2
-resolver: ghc-8.0.1
+extra-deps: []
+resolver: lts-6.6
