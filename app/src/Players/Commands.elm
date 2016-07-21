@@ -23,7 +23,7 @@ saveTask player =
 
         config =
             { verb = "PUT"
-            , headers = [ ( "Content-Type", "application/json" ), ( "Origin", "localhost" ) ]
+            , headers = [ ( "Content-Type", "application/json" ) ]
             , url = saveUrl player.id
             , body = body
             }
