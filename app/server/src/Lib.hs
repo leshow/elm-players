@@ -1,6 +1,7 @@
 {-# LANGUAGE DataKinds #-}
 {-# LANGUAGE LambdaCase #-}
 {-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE OverloadedStrings #-}
 
 module Lib
     ( start
@@ -11,9 +12,9 @@ import Api
 import Control.Concurrent (forkIO, MVar, newEmptyMVar, takeMVar, putMVar, readMVar, newMVar)
 import Control.Monad.IO.Class (liftIO)
 import Control.Monad.Trans.Except (throwE)
-import Network.Wai (Application)
+import Network.Wai (Application, Middleware)
 import Network.Wai.Handler.Warp (runSettings, setPort, setBeforeMainLoop, defaultSettings)
-import Network.Wai.Middleware.Cors (simpleCors)
+import Network.Wai.Middleware.Cors (simpleCorsResourcePolicy, corsRequestHeaders, cors)
 import Network.Wai.Middleware.RequestLogger (logStdoutDev)
 import Servant (serve, (:<|>)(..), Proxy(..), Server, Handler, err404, err500)
 import System.IO
@@ -35,7 +36,13 @@ start = do
 app :: IO Application
 app = do
     s <- getServer
-    return $ logStdoutDev $ simpleCors $ serve api s
+    return $ logStdoutDev $ corsWithContentType $ serve api s
+    where
+        corsWithContentType :: Middleware
+        corsWithContentType = cors (const $ Just policy)
+            where
+              policy = simpleCorsResourcePolicy
+                { corsRequestHeaders = ["Content-Type"] }
 
 getServer :: IO (Server Api)
 getServer = do
