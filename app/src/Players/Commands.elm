@@ -1,11 +1,15 @@
 module Players.Commands exposing (..)
 
 import Http
-import Json.Decode as Decode exposing ((:=))
+import Json.Decode as Decode exposing (field)
 import Json.Encode as Encode
-import Task
 import Players.Models exposing (PlayerId, Player)
 import Players.Messages exposing (..)
+
+
+(:=) : String -> Decode.Decoder a -> Decode.Decoder a
+(:=) =
+    field
 
 
 saveUrl : PlayerId -> String
@@ -13,29 +17,26 @@ saveUrl playerId =
     "http://localhost:4000/api/player/" ++ (toString playerId)
 
 
-saveTask : Player -> Task.Task Http.Error Player
-saveTask player =
+savePlayerRequest : Player -> Http.Request Player
+savePlayerRequest player =
     let
-        body =
-            playerEncoded player
-                |> Encode.encode 0
-                |> Http.string
-
         config =
-            { verb = "PUT"
-            , headers = [ ( "Content-Type", "application/json" ) ]
+            { method = "PUT"
+            , headers = []
             , url = saveUrl player.id
-            , body = body
+            , body = Http.jsonBody <| playerEncoded player
+            , expect = Http.expectJson playerDecode
+            , timeout = Nothing
+            , withCredentials = False
             }
     in
-        Http.send Http.defaultSettings config
-            |> Http.fromJson playerDecode
+        Http.request config
 
 
 save : Player -> Cmd Msg
 save player =
-    saveTask player
-        |> Task.perform SaveFail SaveSuccess
+    savePlayerRequest player
+        |> Http.send PlayerSave
 
 
 playerEncoded : Player -> Encode.Value
@@ -58,7 +59,7 @@ collectionDecoder =
 
 playerDecode : Decode.Decoder Player
 playerDecode =
-    Decode.object3 Player
+    Decode.map3 Player
         ("playerId" := Decode.int)
         ("playerName" := Decode.string)
         ("playerLevel" := Decode.int)
@@ -69,11 +70,11 @@ playerUrl =
     "http://localhost:4000/api/player"
 
 
-fetchTask : Task.Task Http.Error (List Player)
-fetchTask =
-    Http.get collectionDecoder playerUrl
+fetchRequest : Http.Request (List Player)
+fetchRequest =
+    Http.get playerUrl collectionDecoder
 
 
 fetchPlayers : Cmd Msg
 fetchPlayers =
-    Task.perform FetchError FetchSuccess fetchTask
+    fetchRequest |> Http.send PlayerListFetch

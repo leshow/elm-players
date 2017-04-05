@@ -6,10 +6,8 @@ import Players.Models exposing (Player, PlayerId)
 
 type Msg
     = NoOp
-    | FetchSuccess (List Player)
-    | FetchError Http.Error
+    | PlayerListFetch (Result Http.Error (List Player))
     | ShowPlayers
     | ShowPlayer PlayerId
     | ChangeLevel PlayerId Int
-    | SaveSuccess Player
-    | SaveFail Http.Error
+    | PlayerSave (Result Http.Error Player)

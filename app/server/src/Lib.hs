@@ -1,29 +1,42 @@
-{-# LANGUAGE DataKinds #-}
-{-# LANGUAGE LambdaCase #-}
-{-# LANGUAGE TypeOperators #-}
+{-# LANGUAGE DataKinds         #-}
+{-# LANGUAGE LambdaCase        #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE TypeOperators     #-}
 
 module Lib
     ( start
     ) where
 
-import Api
+import           Api
 
-import Control.Concurrent (forkIO, MVar, newEmptyMVar, takeMVar, putMVar, readMVar, newMVar)
-import Control.Monad.IO.Class (liftIO)
-import Control.Monad.Trans.Except (throwE)
-import Network.Wai (Application, Middleware)
-import Network.Wai.Handler.Warp (runSettings, setPort, setBeforeMainLoop, defaultSettings)
-import Network.Wai.Middleware.Cors (simpleCorsResourcePolicy, corsRequestHeaders, cors)
-import Network.Wai.Middleware.RequestLogger (logStdoutDev)
-import Servant (serve, (:<|>)(..), Proxy(..), Server, Handler, err404, err500)
-import System.IO
-import qualified Data.Map as M
+import           Control.Concurrent                     (MVar, forkIO,
+                                                         newEmptyMVar, newMVar,
+                                                         putMVar, readMVar,
+                                                         takeMVar)
+import           Control.Monad.IO.Class                 (liftIO)
+import           Control.Monad.Trans.Except             (throwE)
+import qualified Data.Map                               as M
+import           Network.Wai                            (Application,
+                                                         Middleware)
+import           Network.Wai.Handler.Warp               (defaultSettings,
+                                                         runSettings,
+                                                         setBeforeMainLoop,
+                                                         setPort)
+import           Network.Wai.Middleware.Cors            (cors,
+                                                         corsRequestHeaders,
+                                                         simpleCorsResourcePolicy)
+import           Network.Wai.Middleware.RequestLogger   (logStdoutDev)
+import           Network.Wai.Middleware.Servant.Options
+import           Servant                                ((:<|>) (..), Handler,
+                                                         Proxy (..), Server,
+                                                         err404, err500, serve)
+import           System.IO
 
 start :: IO ()
 start = do
     let port = 4000
         settings =
+
             setPort port $
             setBeforeMainLoop (hPutStrLn stderr
                 ("listening on port " `mappend` show port))
@@ -36,7 +49,7 @@ start = do
 app :: IO Application
 app = do
     s <- getServer
-    return $ logStdoutDev $ corsWithContentType $ serve api s
+    return $ logStdoutDev $ provideOptions apiProxy $ corsWithContentType $ serve api s
     where
         corsWithContentType :: Middleware
         corsWithContentType = cors (const $ Just policy)

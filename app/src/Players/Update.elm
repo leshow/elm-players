@@ -12,10 +12,10 @@ update action players =
         NoOp ->
             players ! []
 
-        FetchSuccess playerList ->
+        PlayerListFetch (Ok playerList) ->
             playerList ! []
 
-        FetchError error ->
+        PlayerListFetch (Err error) ->
             players ! []
 
         ShowPlayers ->
@@ -30,10 +30,10 @@ update action players =
                 |> Cmd.batch
             )
 
-        SaveSuccess newPlayer ->
+        PlayerSave (Ok newPlayer) ->
             ( updatePlayer newPlayer players, Cmd.none )
 
-        SaveFail err ->
+        PlayerSave (Err err) ->
             ( players, Cmd.none )
 
 

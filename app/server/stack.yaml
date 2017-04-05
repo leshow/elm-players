@@ -37,6 +37,9 @@ resolver: lts-6.6
 # will not be run. This is useful for tweaking upstream packages.
 packages:
 - '.'
+- location: 
+    git: https://github.com/sordina/servant-options.git
+    commit: 2ea2c3cf0edd49cbc56ed09f137272c0995008c8
 # Dependency packages to be pulled from upstream that are not in the resolver
 # (e.g., acme-missiles-0.3)
 extra-deps: []
