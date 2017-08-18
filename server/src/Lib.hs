@@ -20,9 +20,7 @@ import           Network.Wai.Handler.Warp               (defaultSettings,
                                                          runSettings,
                                                          setBeforeMainLoop,
                                                          setPort)
-import           Network.Wai.Middleware.Cors            (cors,
-                                                         corsRequestHeaders,
-                                                         simpleCorsResourcePolicy)
+import           Network.Wai.Middleware.Cors
 import           Network.Wai.Middleware.RequestLogger   (logStdoutDev)
 import           Network.Wai.Middleware.Servant.Options
 import           Servant                                ((:<|>) (..), Handler,
@@ -53,7 +51,8 @@ app = do
         $ serve api s
     where
         policy = simpleCorsResourcePolicy
-            { corsRequestHeaders = ["Content-Type"] }
+            { corsRequestHeaders = ["Content-Type"]
+            , corsMethods = "PUT" : simpleMethods }
 
 getServer :: IO (Server Api)
 getServer = do
