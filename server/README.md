@@ -1,6 +1,6 @@
 # Concurrent API in Servant
 
-Servant exposes a great type-safe way of writing api's. The requests run concurrently so it is necessary to lock/unlock data with MVar or STM.
+Servant exposes a great type-safe way of writing api's. The requests run concurrently so it is necessary to lock/unlock data with MVar or STM. Running locally will potentially cause CORS issues.
 
 I have used a mocked database in this simple example which is just a `Data.Map`.
 
